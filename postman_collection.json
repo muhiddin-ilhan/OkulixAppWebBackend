@@ -1,0 +1,1529 @@
+{
+	"info": {
+		"_postman_id": "12345678-1234-1234-1234-123456789012",
+		"name": "OkulixBackendApp API Collection",
+		"description": "Complete API collection for OkulixBackendApp - POST-only endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12345678"
+	},
+	"item": [
+		{
+			"name": "🔐 Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ad\": \"Test\",\n  \"soyad\": \"User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"123456789\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const responseJson = pm.response.json();",
+									"    if (responseJson.success && responseJson.data.token) {",
+									"        pm.environment.set('token', responseJson.data.token);",
+									"        console.log('Token saved to environment');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"123456789\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"profile"
+							]
+						}
+					}
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"currentPassword\": \"123456789\",\n  \"newPassword\": \"newpassword123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/change-password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"change-password"
+							]
+						}
+					}
+				},
+				{
+					"name": "Change Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"newEmail\": \"newemail@example.com\",\n  \"password\": \"123456789\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/change-email",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"change-email"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "👑 Admin - User Management",
+			"item": [
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/get-all-admin",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"get-all-admin"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get User Detail",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"USER_ID_HERE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/get-detail-admin",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"get-detail-admin"
+							]
+						}
+					}
+				},
+				{
+					"name": "Add User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ad\": \"New\",\n  \"soyad\": \"Admin\",\n  \"email\": \"newadmin@example.com\",\n  \"password\": \"123456789\",\n  \"role\": \"admin\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/add-admin",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"add-admin"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"USER_ID_HERE\",\n  \"ad\": \"Updated\",\n  \"soyad\": \"User\",\n  \"email\": \"updated@example.com\",\n  \"role\": \"user\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/update-admin",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"update-admin"
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"USER_ID_HERE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/delete-admin",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"delete-admin"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📦 Products",
+			"item": [
+				{
+					"name": "Get Products",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"categoryId\": \"CATEGORY_ID_HERE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/product/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"product",
+								""
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Product Detail",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"PRODUCT_ID_HERE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/product/detail",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"product",
+								"detail"
+							]
+						}
+					}
+				},
+				{
+					"name": "Like Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"PRODUCT_ID_HERE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/product/like",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"product",
+								"like"
+							]
+						}
+					}
+				},
+				{
+					"name": "Favorite Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"PRODUCT_ID_HERE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/product/favorite",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"product",
+								"favorite"
+							]
+						}
+					}
+				},
+				{
+					"name": "Download Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"PRODUCT_ID_HERE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/product/download",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"product",
+								"download"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "👑 Admin - Product Management",
+			"item": [
+				{
+					"name": "Add Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"New Product\",\n  \"description\": \"Product description\",\n  \"category\": \"CATEGORY_ID_HERE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/product/add",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"product",
+								"add"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"PRODUCT_ID_HERE\",\n  \"name\": \"Updated Product\",\n  \"description\": \"Updated description\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/product/update",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"product",
+								"update"
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"PRODUCT_ID_HERE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/product/delete",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"product",
+								"delete"
+							]
+						}
+					}
+				},
+				{
+					"name": "Add Product Banner",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "productId",
+									"value": "PRODUCT_ID_HERE",
+									"type": "text"
+								},
+								{
+									"key": "banner",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/product/add-banner",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"product",
+								"add-banner"
+							]
+						}
+					}
+				},
+				{
+					"name": "Add Product Gallery",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "productId",
+									"value": "PRODUCT_ID_HERE",
+									"type": "text"
+								},
+								{
+									"key": "gallery",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/product/add-gallery",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"product",
+								"add-gallery"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🏷️ Categories",
+			"item": [
+				{
+					"name": "Get Categories",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/category/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"category",
+								""
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Category Detail",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"CATEGORY_ID_HERE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/category/detail",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"category",
+								"detail"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "👑 Admin - Category Management",
+			"item": [
+				{
+					"name": "Add Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"New Category\",\n  \"description\": \"Category description\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/category/add",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"category",
+								"add"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"CATEGORY_ID_HERE\",\n  \"name\": \"Updated Category\",\n  \"description\": \"Updated description\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/category/update",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"category",
+								"update"
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"CATEGORY_ID_HERE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/category/delete",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"category",
+								"delete"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📊 Visitors",
+			"item": [
+				{
+					"name": "Add Visitor",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"pageName\": \"home\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/visitors/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"visitors",
+								""
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Daily Visitors",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"startDate\": \"2023-12-01\",\n  \"endDate\": \"2023-12-31\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/visitors/daily",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"visitors",
+								"daily"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Page Visitors",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"startDate\": \"2023-12-01\",\n  \"endDate\": \"2023-12-31\",\n  \"pageName\": \"home\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/visitors/pages",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"visitors",
+								"pages"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Visitor Stats",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/visitors/stats",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"visitors",
+								"stats"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "👑 Admin - Visitor Analytics",
+			"item": [
+				{
+					"name": "Admin - Daily Visitors",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"startDate\": \"2023-12-01\",\n  \"endDate\": \"2023-12-31\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/visitors/daily",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"visitors",
+								"daily"
+							]
+						}
+					}
+				},
+				{
+					"name": "Admin - Page Visitors",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"startDate\": \"2023-12-01\",\n  \"endDate\": \"2023-12-31\",\n  \"pageName\": \"home\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/visitors/pages",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"visitors",
+								"pages"
+							]
+						}
+					}
+				},
+				{
+					"name": "Admin - Visitor Stats",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/visitors/stats",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"visitors",
+								"stats"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📢 Reports",
+			"item": [
+				{
+					"name": "Add Report (Public)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Bu ürünle ilgili bir problemim var, kalitesi çok kötü ve beklediğim gibi değil.\",\n  \"email\": \"user@example.com\",\n  \"productId\": \"PRODUCT_ID_HERE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/report/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"report",
+								""
+							]
+						}
+					}
+				},
+				{
+					"name": "Add Report (Guest)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Genel bir şikayetim var, müşteri hizmetleriniz çok yavaş.\",\n  \"email\": \"guest@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/report/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"report",
+								""
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "👑 Admin - Report Management",
+			"item": [
+				{
+					"name": "Get All Reports",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"page\": 1,\n  \"limit\": 10,\n  \"status\": \"unread\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/report/list",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"report",
+								"list"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Report Detail",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"REPORT_ID_HERE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/report/detail",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"report",
+								"detail"
+							]
+						}
+					}
+				},
+				{
+					"name": "Mark Report as Read",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"REPORT_ID_HERE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/report/mark-read",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"report",
+								"mark-read"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Report",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"REPORT_ID_HERE\",\n  \"markAsRead\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/report/update",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"report",
+								"update"
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Report",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"REPORT_ID_HERE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/report/delete",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"report",
+								"delete"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Report Statistics",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/report/stats",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"report",
+								"stats"
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5225",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
