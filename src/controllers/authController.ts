@@ -8,7 +8,7 @@ import { ApiResponse, AuthRequest } from '../types';
 import { AppError, appErrorHandler } from '../utils/errorHandler';
 
 export const register = appErrorHandler(async (req: Request, res: Response): Promise<void> => {
-  const { ad, soyad, email, password, confirm_password } = req.body;
+  const { ad, soyad, email, password } = req.body;
 
   // Check if user already exists
   const existingUser = await User.findOne({ email });
@@ -36,29 +36,20 @@ export const register = appErrorHandler(async (req: Request, res: Response): Pro
     role: user.role
   });
 
+  user.password = "";
+
   res.status(201).json({
     success: true,
     message: 'Kullanıcı başarıyla kaydedildi',
     data: {
-      user: {
-        id: user._id,
-        ad: user.ad,
-        soyad: user.soyad,
-        email: user.email,
-        role: user.role,
-        lastLoginAt: user.lastLoginAt,
-        likes: 0,
-        favorites: 0,
-        downloads: 0,
-        visits: user.visits,
-        token: token
-      }
+      user,
+      token
     }
   } as ApiResponse);
 });
 
 export const addUserAsAdmin = appErrorHandler(async (req: Request, res: Response): Promise<void> => {
-  const { ad, soyad, email, password, role } = req.body;
+  const { ad, soyad, email, password, role, isActive } = req.body;
 
   // Check if user already exists
   const existingUser = await User.findOne({ email });
@@ -73,33 +64,25 @@ export const addUserAsAdmin = appErrorHandler(async (req: Request, res: Response
     email,
     password,
     role,
+    isActive,
     lastLoginAt: new Date(),
   });
 
   await user.save();
 
+  user.password = "";
+
   res.status(201).json({
     success: true,
     message: 'Kullanıcı başarıyla eklendi',
     data: {
-      user: {
-        id: user._id,
-        ad: user.ad,
-        soyad: user.soyad,
-        email: user.email,
-        role: user.role,
-        lastLoginAt: user.lastLoginAt,
-        likes: 0,
-        favorites: 0,
-        downloads: 0,
-        visits: user.visits
-      }
+      user
     }
   } as ApiResponse);
 });
 
 export const updateUserAsAdmin = appErrorHandler(async (req: Request, res: Response): Promise<void> => {
-  const { id, ad, soyad, email, password, role } = req.body;
+  const { id, ad, soyad, email, password, role, isActive } = req.body;
 
   // Check if user already exists
   const existingUser = await User.findById(id);
@@ -108,28 +91,23 @@ export const updateUserAsAdmin = appErrorHandler(async (req: Request, res: Respo
   }
 
   // Update user information
-  existingUser.ad = ad;
-  existingUser.soyad = soyad;
-  existingUser.email = email;
-  existingUser.password = password;
-  existingUser.role = role;
+  if (ad) existingUser.ad = ad;
+  if (soyad) existingUser.soyad = soyad;
+  if (email) existingUser.email = email;
+  if (password) existingUser.password = password;
+  if (role) existingUser.role = role;
+  if (isActive !== undefined) existingUser.isActive = isActive;
 
   await existingUser.save();
+
+  existingUser.password = "";
 
 
   res.status(200).json({
     success: true,
     message: 'Kullanıcı başarıyla güncellendi',
     data: {
-      user: {
-        id: existingUser._id,
-        ad: existingUser.ad,
-        soyad: existingUser.soyad,
-        email: existingUser.email,
-        role: existingUser.role,
-        lastLoginAt: existingUser.lastLoginAt,
-        visits: existingUser.visits
-      }
+      existingUser
     }
   } as ApiResponse);
 });
@@ -180,20 +158,14 @@ export const login = appErrorHandler(async (req: Request, res: Response): Promis
     role: user.role
   });
 
+  user.password = "";
+
   res.status(200).json({
     success: true,
     message: 'Giriş başarıyla tamamlandı',
     data: {
-      user: {
-        id: user._id,
-        ad: user.ad,
-        soyad: user.soyad,
-        email: user.email,
-        role: user.role,
-        lastLoginAt: user.lastLoginAt,
-        visits: user.visits,
-        token: token
-      }
+      user,
+      token
     }
   } as ApiResponse);
 });
@@ -233,6 +205,7 @@ export const getProfile = appErrorHandler(async (req: AuthRequest, res: Response
     }
   } as ApiResponse);
 });
+
 export const getProfileAsAdmin = appErrorHandler(async (req: AuthRequest, res: Response): Promise<void> => {
   const { userId } = req.body;
 
@@ -303,7 +276,6 @@ export const getAllUsersAsAdmin = appErrorHandler(async (req: AuthRequest, res: 
     },
     {
       $project: {
-        password: 0, // Şifreyi exclude et
         _id: 1,
         ad: 1,
         soyad: 1,
@@ -324,6 +296,10 @@ export const getAllUsersAsAdmin = appErrorHandler(async (req: AuthRequest, res: 
       $sort: { createdAt: -1 }
     }
   ]);
+
+  users.forEach(user => {
+    user.password = undefined; // Şifreyi gizle
+  });
 
   res.status(200).json({
     success: true,
@@ -366,7 +342,7 @@ export const changePassword = appErrorHandler(async (req: AuthRequest, res: Resp
 
 export const changeEmail = appErrorHandler(async (req: AuthRequest, res: Response): Promise<void> => {
   const user = req.user;
-  const { new_email } = req.body;
+  const { new_email, password } = req.body;
 
   if (!user) {
     throw new AppError('Kullanıcı bilgisi bulunamadı. Lütfen tekrar giriş yapın.', 401);
@@ -378,29 +354,35 @@ export const changeEmail = appErrorHandler(async (req: AuthRequest, res: Respons
     throw new AppError('Bu email zaten kayıtlı. Lütfen başka bir email kullanın.', 400);
   }
 
-  // Update email
-  const currentUser = await User.findById(user._id);
-  if (!currentUser) {
+  // Find user and include password
+  const userWithPassword = await User.findById(user._id).select('+password');
+  if (!userWithPassword) {
     throw new AppError('Kullanıcı bulunamadı. Lütfen tekrar deneyin.', 404);
   }
+  
+  // Check password 
+  const isPasswordValid = await userWithPassword.comparePassword(password);
+  if (!isPasswordValid) {
+    throw new AppError('Şifre hatalı. Lütfen tekrar deneyin.', 401);
+  }
 
-  currentUser.email = new_email;
-  await currentUser.save();
+  user.email = new_email;
+  await user.save();
 
   res.status(200).json({
     success: true,
     message: 'Email başarıyla değiştirildi',
     data: {
       user: {
-        id: currentUser._id,
-        ad: currentUser.ad,
-        soyad: currentUser.soyad,
-        email: currentUser.email,
-        role: currentUser.role,
-        lastLoginAt: currentUser.lastLoginAt,
-        visits: currentUser.visits,
-        isActive: currentUser.isActive,
-        createdAt: currentUser.createdAt
+        id: user._id,
+        ad: user.ad,
+        soyad: user.soyad,
+        email: user.email,
+        role: user.role,
+        lastLoginAt: user.lastLoginAt,
+        visits: user.visits,
+        isActive: user.isActive,
+        createdAt: user.createdAt
       }
     }
   } as ApiResponse);

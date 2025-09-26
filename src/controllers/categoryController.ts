@@ -3,6 +3,7 @@ import Category from '../models/Category';
 import { ApiResponse } from '../types';
 import { appErrorHandler, AppError } from '../utils/errorHandler';
 import { deleteImage, uploadFilesToPath } from '../utils/uploadUtils';
+import Product from '../models/Product';
 
 export const createCategory = appErrorHandler(async (req: Request, res: Response): Promise<void> => {
   const { name, description, image, parentId } = req.body;
@@ -105,14 +106,14 @@ export const updateCategory = appErrorHandler(async (req: Request, res: Response
   }
 
   if (image) {
+    if (category.image){
+      deleteImage(category.image);
+    }
+
     const uploadedPhotoResults = uploadFilesToPath('categories', name, [image]);
     
     if (uploadedPhotoResults.failed.length > 0 || uploadedPhotoResults.success.length === 0) {
       throw new AppError('Kategori resmi yüklenirken bir hata oluştu: ' + uploadedPhotoResults.failed.map(f => f.error).join(', '), 500);
-    }
-
-    if (category.image){
-      deleteImage(category.image);
     }
 
     category.image = uploadedPhotoResults.success[0].relativePath;
@@ -143,6 +144,12 @@ export const deleteCategory = appErrorHandler(async (req: Request, res: Response
 
   if (children.length > 0) {
     throw new AppError('Bu kategori silinemez çünkü alt kategorilere sahip.', 400);
+  }
+
+  // eğer bu kategoriye ait bir product varsa silinemez
+  const associatedProducts = await Product.find({ categoryId: category._id });
+  if (associatedProducts.length > 0) {
+    throw new AppError('Bu kategori silinemez çünkü ürünlere sahip.', 400);
   }
 
   if (category.image) {

@@ -49,6 +49,10 @@ export const validateUpdateUserAsAdmin = [
     .isIn(['admin', 'user'])
     .withMessage('Role must be either admin or user'),
 
+  body('isActive')
+    .isBoolean()
+    .withMessage('isActive must be a boolean value'),
+
   handleValidationErrors
 ];
 
@@ -89,6 +93,10 @@ export const validateAddUserAsAdmin = [
     .withMessage('Role is required')
     .isIn(['admin', 'user'])
     .withMessage('Role must be either admin or user'),
+
+  body('isActive')
+    .isBoolean()
+    .withMessage('isActive must be a boolean value'),
 
   handleValidationErrors
 ];
@@ -159,6 +167,10 @@ export const validateChangeEmail = [
     .isEmail()
     .withMessage('Please provide a valid email')
     .normalizeEmail(),
+
+  body('password')
+    .notEmpty()
+    .withMessage('Password is required'),
 
   handleValidationErrors
 ];
@@ -420,11 +432,6 @@ export const validateReport = [
     .isEmail()
     .withMessage('Geçerli bir e-posta adresi giriniz')
     .normalizeEmail(),
-
-  body('productId')
-    .optional()
-    .isMongoId()
-    .withMessage('Ürün ID geçerli bir MongoDB ObjectId olmalıdır'),
 
   handleValidationErrors
 ];
