@@ -19,12 +19,12 @@ const requiredEnvVars = [
 // Optional environment variables with their defaults
 const optionalEnvVars = {
   'NODE_ENV': 'development',
-  'PORT': '3000',
+  'PORT': '1506',
   'JWT_EXPIRE_SECONDS': '31536000',
   'CORS_ORIGIN_PRODUCTION': 'https://yourdomain.com',
   'CORS_ORIGIN_PRODUCTION_1': 'https://yourdomain.com.tr',
-  'CORS_ORIGIN_DEV_1': 'http://localhost:3000',
-  'CORS_ORIGIN_DEV_2': 'http://localhost:3001',
+  'CORS_ORIGIN_DEV_1': 'http://localhost:1506',
+  'CORS_ORIGIN_DEV_2': 'http://localhost:1506',
   'UPLOAD_PATH': './uploads',
   'MAX_FILE_SIZE_MB': '5',
   'REQUEST_BODY_LIMIT': '10mb',

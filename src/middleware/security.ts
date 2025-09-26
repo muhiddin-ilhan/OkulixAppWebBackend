@@ -8,8 +8,8 @@ const getCorsOrigins = () => {
     return [process.env.CORS_ORIGIN_PRODUCTION || 'https://okuliz.com', process.env.CORS_ORIGIN_PRODUCTION_1 || 'https://okuliz.com.tr'];
   }
   return [
-    process.env.CORS_ORIGIN_DEV_1 || 'http://localhost:3000',
-    process.env.CORS_ORIGIN_DEV_2 || 'http://localhost:3001'
+    process.env.CORS_ORIGIN_DEV_1 || 'http://localhost:1506',
+    process.env.CORS_ORIGIN_DEV_2 || 'http://localhost:1506'
   ];
 };
 
