@@ -1,19 +1,24 @@
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const connectDB = async (): Promise<void> => {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/okulix_db';
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/okulix_db';
     
-    const conn = await mongoose.connect(mongoURI);
+    await mongoose.connect(mongoURI, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      family: 4, // Force IPv4
+      directConnection: true, // Direct connection
+    });
     
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-    console.log(`Database: ${conn.connection.name}`);
+    console.log('MongoDB connected successfully');
   } catch (error) {
     console.error('Database connection error:', error);
-    process.exit(1);
+    // Retry bağlantısı
+    setTimeout(() => {
+      console.log('Retrying database connection...');
+      connectDB();
+    }, 5000);
   }
 };
 
