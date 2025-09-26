@@ -11,6 +11,16 @@ import Like from '../models/Like';
 import Favorite from '../models/Favorite';
 import Download from '../models/Download';
 
+// Helper function to get base upload path
+const getUploadPath = () => {
+  return process.env.UPLOAD_PATH || './uploads';
+};
+
+const getProductUploadPath = (productName: string, galleryName?: string) => {
+  const basePath = `${getUploadPath().replace('./', '')}/product/${productName}`;
+  return galleryName ? `${basePath}/${galleryName}` : basePath;
+};
+
 export const createProduct = appErrorHandler(async (req: AuthRequest, res: Response): Promise<void> => {
   const { name, description, category, visitorFake, visitor, likesFake, likes, favoritesFake, favorites, downloadsFake, downloads, isActive = true } = req.body;
 
@@ -50,6 +60,8 @@ export const createProductBanner = appErrorHandler(async (req: AuthRequest, res:
   if (!product) {
     throw new AppError('Ürün bulunamadı.', 404);
   }
+
+  deleteImage(product.banner);
 
   const bannerImage = uploadFilesToPath(`product/${product.name}/`, 'banner', [banner]);
   if (bannerImage.failed.length > 0 || bannerImage.success.length === 0) {
@@ -117,7 +129,7 @@ export const updateProductGallery = appErrorHandler(async (req: AuthRequest, res
     throw new AppError(`Bu isimde ("${gallery.name}") bir galeri zaten mevcut. Lütfen farklı bir isim seçin.`, 400);
   }
 
-  const result = changeDirectoryName(`uploads/product/${product.name}/${galleryName}`, `uploads/product/${product.name}/${gallery.name}`);
+  const result = changeDirectoryName(getProductUploadPath(product.name, galleryName), getProductUploadPath(product.name, gallery.name));
   if (!result) {
     throw new AppError('Galeri adı değiştirilirken bir hata oluştu.', 500);
   }
@@ -155,7 +167,7 @@ export const deleteProductGallery = appErrorHandler(async (req: AuthRequest, res
   }
 
   // Remove gallery directory
-  deleteDirectory(`uploads/product/${product.name}/${galleryName}`);
+  deleteDirectory(getProductUploadPath(product.name, galleryName));
 
   // Remove gallery from product
   product.gallery.splice(existingGalleryIndex, 1);
@@ -289,11 +301,8 @@ export const updateProduct = appErrorHandler(async (req: AuthRequest, res: Respo
   }
 
   if (name && name !== product.name) {
-    // Change product directory name
-    const result = changeDirectoryName(`uploads/product/${product.name}`, `uploads/product/${name}`);
-    if (!result) {
-      throw new AppError('Ürün adı değiştirilirken bir hata oluştu.', 500);
-    }
+    // Change product directory name    
+    const result = changeDirectoryName(getProductUploadPath(product.name), getProductUploadPath(name));
 
     // Update gallery image paths
     product.gallery.forEach(gallery => {
@@ -343,10 +352,7 @@ export const deleteProduct = appErrorHandler(async (req: AuthRequest, res: Respo
   }
 
   // hard delete: remove product directory
-  const result = deleteDirectory(`uploads/product/${product.name}`);
-  if (!result) {
-    throw new AppError('Ürün dosyaları silinirken bir hata oluştu.', 500);
-  }
+  const result = deleteDirectory(getProductUploadPath(product.name));
 
   await product.deleteOne();
 
@@ -493,7 +499,7 @@ export const downloadProduct = appErrorHandler(async (req: AuthRequest, res: Res
   archive.pipe(res);
 
   // Gallery klasör yolu
-  const galleryPath = path.join(process.cwd(), 'uploads/product', product.name, galleryName);
+  const galleryPath = path.join(process.cwd(), getProductUploadPath(product.name, galleryName));
 
   console.log(galleryPath);
 

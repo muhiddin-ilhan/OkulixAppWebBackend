@@ -64,12 +64,13 @@ export const uploadFilesToPath = (
             // 3. Base64'ü buffer'a çevir
             const imageBuffer = Buffer.from(base64Data, 'base64');
 
-            // 4. Dosya boyutu kontrolü (5MB limit)
+            // 4. Dosya boyutu kontrolü
+            const maxFileSizeMB = parseInt(process.env.MAX_FILE_SIZE_MB || '5');
             const fileSizeInMB = imageBuffer.length / (1024 * 1024);
-            if (fileSizeInMB > 5) {
+            if (fileSizeInMB > maxFileSizeMB) {
                 failed.push({
                     originalName: `image_${index}`,
-                    error: 'Dosya boyutu 5MB\'yi aşıyor'
+                    error: `Dosya boyutu ${maxFileSizeMB}MB'yi aşıyor`
                 });
                 return;
             }

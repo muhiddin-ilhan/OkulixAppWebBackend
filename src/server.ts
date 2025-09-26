@@ -41,11 +41,13 @@ app.use(requestTiming);
 app.use(generalLimiter);
 
 // Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+const bodyLimit = process.env.REQUEST_BODY_LIMIT || '10mb';
+app.use(express.json({ limit: bodyLimit }));
+app.use(express.urlencoded({ extended: true, limit: bodyLimit }));
 
 // Static files
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+const uploadPath = process.env.UPLOAD_PATH || './uploads';
+app.use('/uploads', express.static(path.join(__dirname, '..', uploadPath.replace('./', ''))));
 
 // API routes
 app.use('/api', routes);

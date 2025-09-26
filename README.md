@@ -47,15 +47,46 @@ src/
    npm install
    ```
 
-3. Create a `.env` file based on `env.example`:
+3. Create a `.env` file based on `.env.example`:
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Then update the values in `.env` file according to your environment:
    ```env
-   MONGODB_URI=mongodb://localhost:27017/okulix_db
-   JWT_SECRET=your-super-secret-jwt-key-here
-   JWT_EXPIRE=7d
-   PORT=5000
+   # Environment
    NODE_ENV=development
+   
+   # Server Configuration
+   PORT=3000
+   
+   # Database Configuration
+   MONGODB_URI=mongodb://localhost:27017/okulix_db
+   
+   # JWT Configuration
+   JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+   JWT_EXPIRE_SECONDS=31536000
+   
+   # CORS Configuration
+   CORS_ORIGIN_PRODUCTION=https://yourdomain.com
+   CORS_ORIGIN_DEV_1=http://localhost:3000
+   CORS_ORIGIN_DEV_2=http://localhost:3001
+   
+   # File Upload Configuration
    UPLOAD_PATH=./uploads
-   MAX_FILE_SIZE=5242880
+   MAX_FILE_SIZE_MB=5
+   REQUEST_BODY_LIMIT=10mb
+   
+   # Rate Limiting Configuration
+   RATE_LIMIT_WINDOW_MS=900000
+   RATE_LIMIT_MAX_REQUESTS=100
+   AUTH_RATE_LIMIT_MAX_REQUESTS=5
+   
+   # Security Configuration
+   HELMET_CSP_DEFAULT_SRC=self
+   HELMET_CSP_STYLE_SRC=self unsafe-inline
+   HELMET_CSP_SCRIPT_SRC=self
+   HELMET_CSP_IMG_SRC=self data: https:
    ```
 
 4. Start the development server:
@@ -108,15 +139,51 @@ Authorization: Bearer <your-jwt-token>
 
 ## Environment Variables
 
+### Core Configuration
+| Variable | Description | Default |
+|----------|-------------|---------|
+| NODE_ENV | Environment mode | development |
+| PORT | Server port | 3000 |
+
+### Database Configuration
 | Variable | Description | Default |
 |----------|-------------|---------|
 | MONGODB_URI | MongoDB connection string | mongodb://localhost:27017/okulix_db |
+
+### JWT Configuration
+| Variable | Description | Default |
+|----------|-------------|---------|
 | JWT_SECRET | JWT secret key | - |
-| JWT_EXPIRE | JWT expiration time | 7d |
-| PORT | Server port | 5000 |
-| NODE_ENV | Environment | development |
+| JWT_EXPIRE_SECONDS | JWT expiration time in seconds | 31536000 |
+
+### CORS Configuration
+| Variable | Description | Default |
+|----------|-------------|---------|
+| CORS_ORIGIN_PRODUCTION | Production CORS origin | https://yourdomain.com |
+| CORS_ORIGIN_DEV_1 | Development CORS origin 1 | http://localhost:3000 |
+| CORS_ORIGIN_DEV_2 | Development CORS origin 2 | http://localhost:3001 |
+
+### File Upload Configuration
+| Variable | Description | Default |
+|----------|-------------|---------|
 | UPLOAD_PATH | File upload directory | ./uploads |
-| MAX_FILE_SIZE | Max file size in bytes | 5242880 |
+| MAX_FILE_SIZE_MB | Max file size in MB | 5 |
+| REQUEST_BODY_LIMIT | Request body size limit | 10mb |
+
+### Rate Limiting Configuration
+| Variable | Description | Default |
+|----------|-------------|---------|
+| RATE_LIMIT_WINDOW_MS | Rate limit window in milliseconds | 900000 |
+| RATE_LIMIT_MAX_REQUESTS | Max requests per window | 100 |
+| AUTH_RATE_LIMIT_MAX_REQUESTS | Max auth requests per window | 5 |
+
+### Security Configuration (Helmet CSP)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| HELMET_CSP_DEFAULT_SRC | Default CSP source | self |
+| HELMET_CSP_STYLE_SRC | Style CSP sources | self unsafe-inline |
+| HELMET_CSP_SCRIPT_SRC | Script CSP source | self |
+| HELMET_CSP_IMG_SRC | Image CSP sources | self data: https: |
 
 ## Scripts
 
