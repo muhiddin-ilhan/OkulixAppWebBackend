@@ -22,6 +22,7 @@ const optionalEnvVars = {
   'PORT': '3000',
   'JWT_EXPIRE_SECONDS': '31536000',
   'CORS_ORIGIN_PRODUCTION': 'https://yourdomain.com',
+  'CORS_ORIGIN_PRODUCTION_1': 'https://yourdomain.com.tr',
   'CORS_ORIGIN_DEV_1': 'http://localhost:3000',
   'CORS_ORIGIN_DEV_2': 'http://localhost:3001',
   'UPLOAD_PATH': './uploads',

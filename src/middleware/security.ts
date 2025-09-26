@@ -5,7 +5,7 @@ import rateLimit from 'express-rate-limit';
 // CORS configuration
 const getCorsOrigins = () => {
   if (process.env.NODE_ENV === 'production') {
-    return [process.env.CORS_ORIGIN_PRODUCTION || 'https://yourdomain.com'];
+    return [process.env.CORS_ORIGIN_PRODUCTION || 'https://okuliz.com', process.env.CORS_ORIGIN_PRODUCTION_1 || 'https://okuliz.com.tr'];
   }
   return [
     process.env.CORS_ORIGIN_DEV_1 || 'http://localhost:3000',
