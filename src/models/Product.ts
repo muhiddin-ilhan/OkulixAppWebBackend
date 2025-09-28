@@ -74,6 +74,12 @@ const productSchema = new Schema<IProduct>({
       trim: true,
       maxlength: [100, 'Gallery name cannot be more than 100 characters']
     },
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: [500, 'Gallery description cannot be more than 500 characters']
+    },
     images: [{
       type: String,
       required: true

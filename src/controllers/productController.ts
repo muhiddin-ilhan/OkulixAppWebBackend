@@ -24,6 +24,11 @@ const getProductUploadPath = (productName: string, galleryName?: string) => {
 export const createProduct = appErrorHandler(async (req: AuthRequest, res: Response): Promise<void> => {
   const { name, description, category, visitorFake, visitor, likesFake, likes, favoritesFake, favorites, downloadsFake, downloads, isActive = true } = req.body;
 
+  const productExists = await Product.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') }, isActive: true });
+  if (productExists) {
+    throw new AppError('Bu isimde zaten bir ürün mevcut. Lütfen farklı bir isim seçin.', 400);
+  }
+
   const categoryExists = await Category.findById(category);
   if (!categoryExists) {
     throw new AppError('Kategori bulunamadı. Lütfen geçerli bir kategori sağlayın.', 400);
@@ -141,6 +146,7 @@ export const updateProductGallery = appErrorHandler(async (req: AuthRequest, res
   });
 
   existingGallery.name = gallery.name;
+  existingGallery.description = gallery.description;
   existingGallery.order = gallery.order;
 
   await product.save();
@@ -247,32 +253,72 @@ export const deletePhotoFromGallery = appErrorHandler(async (req: AuthRequest, r
   } as ApiResponse);
 });
 
+// Helper function to get all subcategory IDs recursively
+const getAllSubcategoryIds = async (categoryId: string): Promise<string[]> => {
+  const subcategories = await Category.find({ parentId: categoryId, isActive: true });
+  let allIds = [categoryId];
+  
+  for (const subcategory of subcategories) {
+    const subIds = await getAllSubcategoryIds(subcategory._id.toString());
+    allIds = [...allIds, ...subIds];
+  }
+  
+  return allIds;
+};
+
 export const getProducts = appErrorHandler(async (req: Request, res: Response): Promise<void> => {
-  const { categoryId } = req.body;
+  const { categoryName } = req.body;
 
   let query = { isActive: true } as any;
 
-  if (categoryId) {
-    const categoryExists = await Category.findById(categoryId);
-    if (!categoryExists || !categoryExists.isActive) {
+  if (categoryName) {
+    const category = await Category.findOne({ 
+      name: { $regex: new RegExp(`^${categoryName}$`, 'i') }, 
+      isActive: true 
+    });
+    if (!category) {
       throw new AppError('Kategori bulunamadı. Lütfen geçerli bir kategori sağlayın.', 400);
     }
-    query.category = categoryId;
+    
+    // Get all subcategory IDs recursively (including the main category)
+    const categoryIds = await getAllSubcategoryIds(category._id.toString());
+    query.category = { $in: categoryIds };
   }
 
-  const products = await Product.find(query);
+  // Find products
+  const products = await Product.find(query).lean();
+
+  if (products.length === 0) {
+    throw new AppError('Ürün bulunamadı.', 404);
+  }
+
+  // Get unique category IDs from products to minimize database queries
+  const uniqueCategoryIds = [...new Set(products.map(p => p.category.toString()))];
+  
+  // Fetch all categories at once for better performance
+  const categories = await Category.find({ _id: { $in: uniqueCategoryIds } }).lean();
+  
+  // Create a category map for O(1) lookup
+  const categoryMap = new Map(categories.map(cat => [cat._id.toString(), cat]));
+
+  // Add category model information to each product
+  const productsWithCategory = products.map(product => {
+    const categoryModel = categoryMap.get(product.category.toString());
+    return {
+      ...product,
+      categoryModel: categoryModel || null
+    };
+  });
 
   res.status(200).json({
     success: true,
     message: 'Products retrieved successfully',
-    data: {
-      products
-    }
+    data: productsWithCategory,
   } as ApiResponse);
 });
 
 export const getProduct = appErrorHandler(async (req: Request, res: Response): Promise<void> => {
-  const product = await Product.findById(req.body.id);
+  const product = await Product.findOne({ name: { $regex: new RegExp(`^${req.body.name}$`, 'i') } });
 
   if (!product) {
     throw new AppError('Ürün bulunamadı.', 404);

@@ -227,6 +227,13 @@ export const validateProductGalleryUpdate = [
     .isLength({ min: 2, max: 100 })
     .withMessage('Galeri adı 2 ile 100 karakter arasında olmalıdır.'),
 
+  body('gallery.description')
+    .trim()
+    .notEmpty()
+    .withMessage('Galeri açıklaması boş bırakılamaz. Lütfen bir açıklama girin.')
+    .isLength({ min: 10, max: 500 })
+    .withMessage('Galeri açıklaması 10 ile 500 karakter arasında olmalıdır.'),
+
   body('gallery.order')
     .optional()
     .isInt({ min: 0 })
@@ -250,6 +257,13 @@ export const validateProductGallery = [
     .withMessage('Galeri adı boş bırakılamaz. Lütfen bir galeri adı girin.')
     .isLength({ min: 2, max: 100 })
     .withMessage('Galeri adı 2 ile 100 karakter arasında olmalıdır.'),
+
+  body('gallery.description')
+    .trim()
+    .notEmpty()
+    .withMessage('Galeri açıklaması boş bırakılamaz. Lütfen bir açıklama girin.')
+    .isLength({ min: 10, max: 500 })
+    .withMessage('Galeri açıklaması 10 ile 500 karakter arasında olmalıdır.'),
 
   body('gallery.images')
     .isArray({ min: 1 })

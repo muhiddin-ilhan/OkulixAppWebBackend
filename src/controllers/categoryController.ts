@@ -8,6 +8,12 @@ import Product from '../models/Product';
 export const createCategory = appErrorHandler(async (req: Request, res: Response): Promise<void> => {
   const { name, description, image, parentId } = req.body;
 
+  // Check if category with the same name already exists (case-insensitive)
+  const existingCategory = await Category.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } });
+  if (existingCategory) {
+    throw new AppError('Bu isimde zaten bir kategori mevcut. Lütfen farklı bir isim seçin.', 400);
+  }
+
   const uploadedPhotoResults = uploadFilesToPath('categories', name, [image]);
 
   if (uploadedPhotoResults.failed.length > 0 || uploadedPhotoResults.success.length === 0) {

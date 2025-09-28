@@ -34,6 +34,7 @@ export interface IProduct extends Document {
   banner: string;
   gallery: {
     name: string;
+    description: string;
     images: string[];
     order: number;
   }[];

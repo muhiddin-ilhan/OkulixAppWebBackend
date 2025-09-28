@@ -31,7 +31,18 @@ app.set('trust proxy', 1);
 
 // Security middleware
 app.use(helmetConfig);
-app.use(cors(corsOptions));
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(cors(corsOptions));
+} else {
+  // Development için daha esnek CORS ayarı
+  app.use(cors({
+    origin: true, // Tüm origin'lere izin ver (sadece development için)
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  }));
+}
 
 // Performance middleware
 app.use(compressionMiddleware);
